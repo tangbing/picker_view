@@ -23,21 +23,21 @@ typedef PickerVoidCallBack = void Function(int section, int row);
 class PickerView extends StatefulWidget {
   final PickerRowCallBack numberOfRowsAtSection;
   final PickerItemBuilder itemBuilder;
-  final PickerVoidCallBack onSelectRowChanged;
-  final double itemExtent;
-  final double diameterRatio;
-  final bool useMagnifier;
-  final double magnification;
-  final double squeeze;
+  final PickerVoidCallBack? onSelectRowChanged;
+  final double? itemExtent;
+  final double? diameterRatio;
+  final bool? useMagnifier;
+  final double? magnification;
+  final double? squeeze;
   final PickerController controller;
-  final double space;
-  final EdgeInsets padding;
+  final double? space;
+  final EdgeInsets? padding;
 
   PickerView({
-    Key key,
-    @required this.numberOfRowsAtSection,
-    @required this.itemBuilder,
-    @required this.controller,
+    Key? key,
+    required this.numberOfRowsAtSection,
+    required this.itemBuilder,
+    required this.controller,
     this.itemExtent,
     this.diameterRatio,
     this.useMagnifier,
@@ -53,13 +53,13 @@ class PickerView extends StatefulWidget {
 }
 
 class PickerViewState extends State<PickerView> {
-  PickerController _controller;
-  double _squeeze;
+  late PickerController _controller;
+  double? _squeeze;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? PickerController(length: 0);
+    _controller = widget.controller;
     _squeeze = widget.squeeze ?? _kSqueeze;
   }
 
@@ -77,7 +77,7 @@ class PickerViewState extends State<PickerView> {
     return Padding(
       padding: widget.padding ?? EdgeInsets.zero,
       child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
         child: DefaultTextStyle.merge(
           style: _kDefaultPickerTextStyle,
           child: Row(children: _buildPickers()),
@@ -89,7 +89,7 @@ class PickerViewState extends State<PickerView> {
   List<Widget> _buildPickers() {
     List<Widget> children = [];
     for (int section = 0; section < _controller.length; section++) {
-      if (children.isNotEmpty && widget.space != null && widget.space != 0) {
+      if (children.isNotEmpty && widget.space != 0) {
         children.add(SizedBox(width: widget.space));
       }
       children.add(Expanded(child: _buildPickerSection(section: section)));
@@ -97,7 +97,7 @@ class PickerViewState extends State<PickerView> {
     return children;
   }
 
-  Widget _buildPickerSection({int section}) {
+  Widget _buildPickerSection({required int section}) {
     final textDirectionFactor =
         Directionality.of(context) == TextDirection.ltr ? 1 : -1;
     final double offAxisFraction = (section - 1) * 0.3 * textDirectionFactor;
@@ -113,7 +113,7 @@ class PickerViewState extends State<PickerView> {
       count: widget.numberOfRowsAtSection(section),
       changed: (row) {
         if (widget.onSelectRowChanged != null) {
-          widget.onSelectRowChanged(section, row);
+          widget.onSelectRowChanged!(section, row);
         }
         _controller.scrollControllers.indexWhere((e) {
           e.jumpToItem(0);
@@ -143,9 +143,9 @@ class PickerController extends ChangeNotifier {
   final List<FixedExtentScrollController> scrollControllers;
 
   PickerController({
-    @required this.length,
-    List<FixedExtentScrollController> scrollControllers,
-  })  : assert(scrollControllers == null || scrollControllers.length == length),
+    required this.length,
+    List<FixedExtentScrollController>? scrollControllers,
+  })  : assert(scrollControllers?.length == length),
         scrollControllers = scrollControllers ??
             List.filled(length, 0)
                 .map((e) => FixedExtentScrollController(initialItem: e))
@@ -169,24 +169,24 @@ class PickerController extends ChangeNotifier {
 }
 
 class PickerSection extends StatelessWidget {
-  final Key key;
+  final Key? key;
   final FixedExtentScrollController controller;
   final ValueChanged<int> changed;
   final int count;
   final IndexedWidgetBuilder itemBuilder;
-  final double itemExtent;
-  final double diameterRatio;
-  final double offAxisFraction;
-  final bool useMagnifier;
-  final double magnification;
-  final double squeeze;
+  final double? itemExtent;
+  final double? diameterRatio;
+  final double? offAxisFraction;
+  final bool? useMagnifier;
+  final double? magnification;
+  final double? squeeze;
 
   PickerSection({
     this.key,
-    this.controller,
-    this.changed,
-    this.count,
-    this.itemBuilder,
+    required this.controller,
+    required this.changed,
+    required this.count,
+    required this.itemBuilder,
     this.itemExtent,
     this.diameterRatio,
     this.offAxisFraction,

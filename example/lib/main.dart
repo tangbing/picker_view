@@ -13,13 +13,7 @@ import 'package:picker_view_example/district.dart';
 void main() {
   runApp(DevicePreview(
     enabled: kIsWeb,
-    devices: [
-      ...Devices.ios.all.reversed,
-      ...Devices.android.all,
-      ...Devices.linux.all,
-      ...Devices.windows.all,
-      ...Devices.macos.all,
-    ],
+    devices: Devices.all,
     builder: (context) => App(),
   ));
 }
@@ -52,7 +46,7 @@ class App extends StatelessWidget {
 }
 
 class PickerViewHomePage extends StatefulWidget {
-  PickerViewHomePage({Key key, this.title}) : super(key: key);
+  PickerViewHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -101,44 +95,44 @@ class _PickerViewHomePageState extends State<PickerViewHomePage> {
                       numberOfRowsAtSection: (section) {
                         if (section == 1) {
                           final index0 = _controller.selectedItems()[0];
-                          return districts.tryGet(index0)?.districts?.length ??
+                          return districts?.tryGet(index0)?.districts?.length ??
                               0;
                         } else if (section == 2) {
                           final index0 = _controller.selectedItems()[0];
                           final index1 = _controller.selectedItems()[1];
                           return districts
-                                  .tryGet(index0)
+                                  ?.tryGet(index0)
                                   ?.districts
                                   ?.tryGet(index1)
                                   ?.districts
                                   ?.length ??
                               0;
                         } else {
-                          return districts.length;
+                          return districts?.length ?? 0;
                         }
                       },
                       itemBuilder: (context, section, index) {
-                        District district;
+                        District? district;
                         if (section == 1) {
                           final index0 = _controller.selectedItems()[0];
                           district =
-                              districts.tryGet(index0).districts.tryGet(index);
+                              districts?.tryGet(index0)?.districts?.tryGet(index);
                         } else if (section == 2) {
                           final index0 = _controller.selectedItems()[0];
                           final index1 = _controller.selectedItems()[1];
                           district = districts
-                              .tryGet(index0)
-                              .districts
-                              .tryGet(index1)
-                              .districts
-                              .tryGet(index);
+                              ?.tryGet(index0)
+                              ?.districts
+                              ?.tryGet(index1)
+                              ?.districts
+                              ?.tryGet(index);
                         } else {
-                          district = districts[index];
+                          district = districts?[index];
                         }
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: AutoSizeText(
-                            district.name,
+                            district?.name ?? '',
                             minFontSize: 6,
                             maxLines: 1,
                           ),
@@ -153,10 +147,10 @@ class _PickerViewHomePageState extends State<PickerViewHomePage> {
                   const SizedBox(height: 8),
                   Text(() {
                     var items = _controller.selectedItems();
-                    var district0 = districts[items[0]];
+                    var district0 = districts?[items[0]];
                     var district1 = district0?.districts?.tryGet(items[1]);
                     var district2 = district1?.districts?.tryGet(items[2]);
-                    return '${district0.name}${district1?.name ?? ''}${district2?.name ?? ''}';
+                    return '${district0?.name ?? ''}${district1?.name ?? ''}${district2?.name ?? ''}';
                   }()),
                 ],
               );
@@ -192,14 +186,14 @@ class _PickerViewHomePageState extends State<PickerViewHomePage> {
 Future<List<District>> request() async {
   final url =
       'https://restapi.amap.com/v3/config/district?key=9ad362af520113de3f0b734b7e48cd58&subdistrict=3';
-  final response = await get(url);
+  final response = await get(Uri.parse(url));
   List districts = jsonDecode(response.body)['districts'][0]['districts'];
   return districts.map((e) => District.fromJson(e)).toList();
 }
 
 extension IteratorExtension<T> on List<T> {
-  T tryGet(int index) {
+  T tryGet(int index, {T? defaultValue}) {
     if (index < length) return this[index];
-    return firstWhere((element) => true, orElse: () => null);
+    return firstWhere((_) => true, orElse: () => defaultValue ?? (throw RangeError('Index out of bounds')));
   }
 }

@@ -5,16 +5,18 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=3.5.4 <4.0.0"
 
 dependencies:
+  auto_size_text: ^3.0.0
+  device_preview: ^1.2.0
   flutter:
     sdk: flutter
+  http: ^1.4.0
   picker_view:
     path: ../
-  http: ^0.12.2
-  auto_size_text: ^2.1.0
-  device_preview: ^0.6.2-beta
+#  http: ^0.12.2
+#  auto_size_text: ^2.1.0
 
 dev_dependencies:
   flutter_test:

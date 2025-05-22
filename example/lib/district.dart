@@ -1,10 +1,10 @@
 class District {
-  final String citycode;
-  final String adcode;
-  final String name;
-  final String center;
-  final String level;
-  final List<District> districts;
+  final String? citycode;
+  final String? adcode;
+  final String? name;
+  final String? center;
+  final String? level;
+  final List<District>? districts;
 
   District({
     this.citycode,
